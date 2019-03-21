@@ -1,36 +1,40 @@
 import { forEachValue } from '../util'
 
 // Base data struct for store's module, package with some attribute and method
+// ! 模块类
 export default class Module {
-  constructor (rawModule, runtime) {
+  constructor(rawModule, runtime) {
     this.runtime = runtime
     // Store some children item
-    this._children = Object.create(null)
+    this._children = Object.create(null) // ! 存储子模块
     // Store the origin module object which passed by programmer
-    this._rawModule = rawModule
+    this._rawModule = rawModule // ! 存储原始模块
     const rawState = rawModule.state
 
     // Store the origin module's state
-    this.state = (typeof rawState === 'function' ? rawState() : rawState) || {}
+    this.state = (typeof rawState === 'function' ? rawState() : rawState) || {} // ! 存储 state
   }
 
-  get namespaced () {
+  // ! 获取命名空间的值的方法
+  get namespaced() {
     return !!this._rawModule.namespaced
   }
 
-  addChild (key, module) {
+  // ! 增加子模块
+  addChild(key, module) {
     this._children[key] = module
   }
 
-  removeChild (key) {
+  removeChild(key) {
     delete this._children[key]
   }
 
-  getChild (key) {
+  // ! 获取子模块
+  getChild(key) {
     return this._children[key]
   }
 
-  update (rawModule) {
+  update(rawModule) {
     this._rawModule.namespaced = rawModule.namespaced
     if (rawModule.actions) {
       this._rawModule.actions = rawModule.actions
@@ -43,23 +47,23 @@ export default class Module {
     }
   }
 
-  forEachChild (fn) {
+  forEachChild(fn) {
     forEachValue(this._children, fn)
   }
 
-  forEachGetter (fn) {
+  forEachGetter(fn) {
     if (this._rawModule.getters) {
       forEachValue(this._rawModule.getters, fn)
     }
   }
 
-  forEachAction (fn) {
+  forEachAction(fn) {
     if (this._rawModule.actions) {
       forEachValue(this._rawModule.actions, fn)
     }
   }
 
-  forEachMutation (fn) {
+  forEachMutation(fn) {
     if (this._rawModule.mutations) {
       forEachValue(this._rawModule.mutations, fn)
     }

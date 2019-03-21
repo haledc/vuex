@@ -7,20 +7,22 @@
 export const mapState = normalizeNamespace((namespace, states) => {
   const res = {}
   normalizeMap(states).forEach(({ key, val }) => {
-    res[key] = function mappedState () {
+    res[key] = function mappedState() {
+      // ! 获取 root 上的值
       let state = this.$store.state
       let getters = this.$store.getters
+      // ! 获取 namespace 上的 值
       if (namespace) {
-        const module = getModuleByNamespace(this.$store, 'mapState', namespace)
+        const module = getModuleByNamespace(this.$store, 'mapState', namespace) // ! 获取对应模块
         if (!module) {
           return
         }
-        state = module.context.state
+        state = module.context.state // ! 从本地上下文中获取，下同
         getters = module.context.getters
       }
-      return typeof val === 'function'
+      return typeof val === 'function' // ! 判断是否时函数
         ? val.call(this, state, getters)
-        : state[val]
+        : state[val] // ! 返回 state 对应的值（保存在 val 中）
     }
     // mark vuex getter for devtools
     res[key].vuex = true
@@ -37,11 +39,15 @@ export const mapState = normalizeNamespace((namespace, states) => {
 export const mapMutations = normalizeNamespace((namespace, mutations) => {
   const res = {}
   normalizeMap(mutations).forEach(({ key, val }) => {
-    res[key] = function mappedMutation (...args) {
+    res[key] = function mappedMutation(...args) {
       // Get the commit method from store
       let commit = this.$store.commit
       if (namespace) {
-        const module = getModuleByNamespace(this.$store, 'mapMutations', namespace)
+        const module = getModuleByNamespace(
+          this.$store,
+          'mapMutations',
+          namespace
+        )
         if (!module) {
           return
         }
@@ -66,11 +72,17 @@ export const mapGetters = normalizeNamespace((namespace, getters) => {
   normalizeMap(getters).forEach(({ key, val }) => {
     // The namespace has been mutated by normalizeNamespace
     val = namespace + val
-    res[key] = function mappedGetter () {
-      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+    res[key] = function mappedGetter() {
+      if (
+        namespace &&
+        !getModuleByNamespace(this.$store, 'mapGetters', namespace)
+      ) {
         return
       }
-      if (process.env.NODE_ENV !== 'production' && !(val in this.$store.getters)) {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        !(val in this.$store.getters)
+      ) {
         console.error(`[vuex] unknown getter: ${val}`)
         return
       }
@@ -91,11 +103,15 @@ export const mapGetters = normalizeNamespace((namespace, getters) => {
 export const mapActions = normalizeNamespace((namespace, actions) => {
   const res = {}
   normalizeMap(actions).forEach(({ key, val }) => {
-    res[key] = function mappedAction (...args) {
+    res[key] = function mappedAction(...args) {
       // get dispatch function from store
       let dispatch = this.$store.dispatch
       if (namespace) {
-        const module = getModuleByNamespace(this.$store, 'mapActions', namespace)
+        const module = getModuleByNamespace(
+          this.$store,
+          'mapActions',
+          namespace
+        )
         if (!module) {
           return
         }
@@ -114,7 +130,7 @@ export const mapActions = normalizeNamespace((namespace, actions) => {
  * @param {String} namespace
  * @return {Object}
  */
-export const createNamespacedHelpers = (namespace) => ({
+export const createNamespacedHelpers = namespace => ({
   mapState: mapState.bind(null, namespace),
   mapGetters: mapGetters.bind(null, namespace),
   mapMutations: mapMutations.bind(null, namespace),
@@ -127,25 +143,28 @@ export const createNamespacedHelpers = (namespace) => ({
  * normalizeMap({a: 1, b: 2, c: 3}) => [ { key: 'a', val: 1 }, { key: 'b', val: 2 }, { key: 'c', val: 3 } ]
  * @param {Array|Object} map
  * @return {Object}
+ * ! 格式化 Map 👆
  */
-function normalizeMap (map) {
+function normalizeMap(map) {
   return Array.isArray(map)
-    ? map.map(key => ({ key, val: key }))
-    : Object.keys(map).map(key => ({ key, val: map[key] }))
+    ? map.map(key => ({ key, val: key })) // ! 不修改 key 的名字
+    : Object.keys(map).map(key => ({ key, val: map[key] })) // ! 映射，修改 key的名字
 }
 
 /**
  * Return a function expect two param contains namespace and map. it will normalize the namespace and then the param's function will handle the new namespace and the map.
  * @param {Function} fn
  * @return {Function}
+ * ! 格式化参数
  */
-function normalizeNamespace (fn) {
+function normalizeNamespace(fn) {
   return (namespace, map) => {
+    // ! 命名空间不为字符串；比如，传入 root 时，没有模块名，是直接传 {} 或者 []
     if (typeof namespace !== 'string') {
-      map = namespace
-      namespace = ''
+      map = namespace // ! 把命名空间设置为 map
+      namespace = '' // ! 命名空间为空；
     } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/'
+      namespace += '/' // ! 拼接 / => moduleName = moduleName/
     }
     return fn(namespace, map)
   }
@@ -158,10 +177,12 @@ function normalizeNamespace (fn) {
  * @param {String} namespace
  * @return {Object}
  */
-function getModuleByNamespace (store, helper, namespace) {
-  const module = store._modulesNamespaceMap[namespace]
+function getModuleByNamespace(store, helper, namespace) {
+  const module = store._modulesNamespaceMap[namespace] // ! 通过命名空间值在模块映射表中获取获取对象的模块
   if (process.env.NODE_ENV !== 'production' && !module) {
-    console.error(`[vuex] module namespace not found in ${helper}(): ${namespace}`)
+    console.error(
+      `[vuex] module namespace not found in ${helper}(): ${namespace}`
+    )
   }
   return module
 }
