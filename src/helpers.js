@@ -20,7 +20,7 @@ export const mapState = normalizeNamespace((namespace, states) => {
         state = module.context.state // ! 从本地上下文中获取，下同
         getters = module.context.getters
       }
-      return typeof val === 'function' // ! 判断是否时函数
+      return typeof val === 'function' // ! 判断是否是函数
         ? val.call(this, state, getters)
         : state[val] // ! 返回 state 对应的值（保存在 val 中）
     }

@@ -11,7 +11,7 @@ export class Store {
     // Auto install if it is not done yet and `window` has `Vue`.
     // To allow users to avoid auto-installation in some cases,
     // this code should be placed here. See #731
-    // ! 使用 Vuex 为引入外链时
+    // ! 使用 Vuex 为引入外链时的安装方法
     if (!Vue && typeof window !== 'undefined' && window.Vue) {
       install(window.Vue)
     }
@@ -28,11 +28,11 @@ export class Store {
       )
     }
 
-    // ! 获取配置
+    // ! 获取插件配置和严格模式
     const { plugins = [], strict = false } = options
 
     // store internal state
-    this._committing = false // ! commit 后设置为 true
+    this._committing = false // ! 正常 commit mutation后设置为 true
     this._actions = Object.create(null)
     this._actionSubscribers = []
     this._mutations = Object.create(null)
@@ -46,7 +46,7 @@ export class Store {
     const store = this
     const { dispatch, commit } = this
 
-    // ! 重新赋值，传入参数
+    // ! 重新赋值，传入参数，便于在组件中 this.$store.dispatch 使用
     this.dispatch = function boundDispatch(type, payload) {
       return dispatch.call(store, type, payload)
     }
@@ -55,7 +55,7 @@ export class Store {
     }
 
     // strict mode
-    this.strict = strict // ! 模式
+    this.strict = strict // ! 严格模式
 
     const state = this._modules.root.state // ! 根状态
 
@@ -71,7 +71,7 @@ export class Store {
     // apply plugins
     plugins.forEach(plugin => plugin(this)) // ! 执行所有插件
 
-    // ! 调试工具
+    // ! 激活调试工具
     const useDevtools =
       options.devtools !== undefined ? options.devtools : Vue.config.devtools
     if (useDevtools) {
@@ -79,7 +79,7 @@ export class Store {
     }
   }
 
-  // ! 获取 state，触发响应式 @Api
+  // ! 获取 state，触发响应式 @API
   get state() {
     return this._vm._data.$$state
   }
@@ -90,7 +90,7 @@ export class Store {
     }
   }
 
-  // ! commit 方法 @Api
+  // ! commit 方法 @API
   commit(_type, _payload, _options) {
     // check object-style commit
     const { type, payload, options } = unifyObjectStyle(
@@ -123,7 +123,7 @@ export class Store {
     }
   }
 
-  // ! dispatch 方法 @Api
+  // ! dispatch 方法 @API
   dispatch(_type, _payload) {
     // check object-style dispatch
     const { type, payload } = unifyObjectStyle(_type, _payload)
@@ -169,18 +169,18 @@ export class Store {
     })
   }
 
-  // ! 订阅 mutation 方法
+  // ! 订阅 mutation 方法 @API
   subscribe(fn) {
     return genericSubscribe(fn, this._subscribers)
   }
 
-  // ! 订阅 action 方法
+  // ! 订阅 action 方法 @API
   subscribeAction(fn) {
     const subs = typeof fn === 'function' ? { before: fn } : fn
     return genericSubscribe(subs, this._actionSubscribers)
   }
 
-  // ! 监听 @api
+  // ! 监听 @API
   watch(getter, cb, options) {
     if (process.env.NODE_ENV !== 'production') {
       assert(
@@ -195,6 +195,7 @@ export class Store {
     )
   }
 
+  // ! 替换 state 主要用于服务端渲染的脱水
   replaceState(state) {
     this._withCommit(() => {
       this._vm._data.$$state = state
@@ -250,7 +251,7 @@ export class Store {
   }
 
   // ! 包装 commit；设置 _committing 状态
-  // ! 正常执行 commit 后为 true
+  // ! 正常执行 commit 后 _committing 为 true，防止随意更改 vuex 的数据
   _withCommit(fn) {
     const committing = this._committing
     this._committing = true
