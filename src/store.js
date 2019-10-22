@@ -1,7 +1,7 @@
 import applyMixin from './mixin'
 import devtoolPlugin from './plugins/devtool'
 import ModuleCollection from './module/module-collection'
-import { forEachValue, isObject, isPromise, assert } from './util'
+import { forEachValue, isObject, isPromise, assert, partial } from './util'
 
 let Vue // bind on install
 
@@ -297,7 +297,9 @@ function resetStoreVM(store, state, hot) {
   // ! 遍历 getters
   forEachValue(wrappedGetters, (fn, key) => {
     // use computed to leverage its lazy-caching mechanism
-    computed[key] = () => fn(store) // ! 计算属性的值为原生 getter 的返回值
+    // direct inline function use will lead to closure preserving oldVm.
+    // using partial to return function with only arguments preserved in closure enviroment.
+    computed[key] = partial(fn, store) // ! 计算属性的值为原生 getter 的返回值
     // ! 代理 store.getters 的属性
     // ! getter store.getters.xxx => store._vm.computed[xxx] => store._vm[xxx]
     Object.defineProperty(store.getters, key, {
@@ -355,6 +357,16 @@ function installModule(store, rootState, path, module, hot) {
   // register in namespace map
   // ! 如果设置了命名空间；namespaced = true
   if (module.namespaced) {
+    if (
+      store._modulesNamespaceMap[namespace] &&
+      process.env.NODE_ENV !== 'production'
+    ) {
+      console.error(
+        `[vuex] duplicate namespace ${namespace} for the namespaced module ${path.join(
+          '/'
+        )}`
+      )
+    }
     store._modulesNamespaceMap[namespace] = module // ! 添加到映射表
   }
 
@@ -420,9 +432,7 @@ function makeLocalContext(store, namespace, path) {
               !store._actions[type]
             ) {
               console.error(
-                `[vuex] unknown local action type: ${
-                  args.type
-                }, global type: ${type}`
+                `[vuex] unknown local action type: ${args.type}, global type: ${type}`
               )
               return
             }
@@ -445,9 +455,7 @@ function makeLocalContext(store, namespace, path) {
               !store._mutations[type]
             ) {
               console.error(
-                `[vuex] unknown local mutation type: ${
-                  args.type
-                }, global type: ${type}`
+                `[vuex] unknown local mutation type: ${args.type}, global type: ${type}`
               )
               return
             }
