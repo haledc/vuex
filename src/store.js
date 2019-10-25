@@ -201,7 +201,7 @@ export class Store {
     )
   }
 
-  // ! 替换 state 的根状态，这里也是使用 commit 的执行
+  // ! 替换 state 的根状态，这里也是提交 commit 进行数据修改 
   replaceState(state) {
     this._withCommit(() => {
       this._vm._data.$$state = state
@@ -328,9 +328,9 @@ function resetStoreVM(store, state, hot) {
   // ! 绑定 state 和 getter 为 Vue 实例的 data 和 computed 属性，变成响应式数据
   store._vm = new Vue({
     data: {
-      $$state: state // !  store.state -> store._vm.data.$$state 
+      $$state: state // !  store.state -> store._vm.data.$$state
     },
-    computed // ! 传入到 Vue 实例
+    computed // ! store._vm.computed[xxx] -> store._vm[xxx]
   })
   Vue.config.silent = silent // ! 恢复原来的 silent
 
@@ -371,7 +371,7 @@ function installModule(store, rootState, path, module, hot) {
         )}`
       )
     }
-    store._modulesNamespaceMap[namespace] = module // ! 注册到命名映射表中
+    store._modulesNamespaceMap[namespace] = module // ! 赋值到命名映射表中
   }
 
   // set state
@@ -383,7 +383,7 @@ function installModule(store, rootState, path, module, hot) {
     })
   }
 
-  // ! 构造了一个本地上下文环境（模块内部）
+  // ! 构造了一个模块上下文环境（模块内部）
   // ! local 中的 commit dispatch state getter 的效果会不一样
   const local = (module.context = makeLocalContext(store, namespace, path))
 
@@ -413,7 +413,7 @@ function installModule(store, rootState, path, module, hot) {
 /**
  * make localized dispatch, commit, getters and state
  * if there is no namespace, just use root ones
- * ! 创建本地上下文的方法 => 创建本地模块的 local => 主要是修改 type 是模块里面的，而不是 root 的
+ * ! 创建模块上下文的方法 => 创建本地模块的 local => 主要是修改 type 是模块里面的，而不是 root 的
  *
  */
 function makeLocalContext(store, namespace, path) {
@@ -494,17 +494,17 @@ function makeLocalGetters(store, namespace) {
   const splitPos = namespace.length // ! 分割点：namespace 的长度
   Object.keys(store.getters).forEach(type => {
     // skip if the target getter is not match this namespace
-    if (type.slice(0, splitPos) !== namespace) return // ! 命名空间和类型不一致时直接返回，即找不到对应的 getter
+    if (type.slice(0, splitPos) !== namespace) return // ! 命名空间和 type 的模块名不一致时直接返回，即没有匹配成功
 
     // extract local getter type
-    const localType = type.slice(splitPos) // ! 获取本地的 type：moduleName/getterName --> getterName
+    const localType = type.slice(splitPos) // ! 截取 type 名称：moduleName/getterName --> getterName
 
     // Add a port to the getters proxy.
     // Define as getter property because
     // we do not want to evaluate the getters in this time.
     // ! 代理 gettersProxy，gettersProxy.localType === store.getters[type]
     Object.defineProperty(gettersProxy, localType, {
-      get: () => store.getters[type], // ! 这里是在
+      get: () => store.getters[type], // ! gettersProxy.localType === store.getters[type]
       enumerable: true
     })
   })
@@ -519,7 +519,7 @@ function registerMutation(store, type, handler, local) {
 
   // ! _mutations = { 'moduleName/mutationName': [wrappedMutationHandler] }
   entry.push(function wrappedMutationHandler(payload) {
-    handler.call(store, local.state, payload) // ! mutationFn(local.state, payload) --> 参数是模块的 state
+    handler.call(store, local.state, payload) // ! mutationFn(local.state, payload) --> 第一个参数是模块的 state
   })
 }
 
@@ -567,7 +567,7 @@ function registerGetter(store, type, rawGetter, local) {
     return
   }
 
-  // ! 返回原生函数
+  // ! 使用原始函数
   store._wrappedGetters[type] = function wrappedGetter(store) {
     return rawGetter(
       // ! 传入多个参数
@@ -605,7 +605,7 @@ function getNestedState(state, path) {
 
 // ! 规范化 commit 和 dispatch 函数的参数
 // ! e.g. commit(type: string, payload?: any, options?: Object)
-// !      commit({type: string, payload?: any}, options? Object)
+// !      commit({ type: string, payload?: any }, options? Object)
 function unifyObjectStyle(type, payload, options) {
   if (isObject(type) && type.type) {
     options = payload

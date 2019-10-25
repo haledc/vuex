@@ -58,7 +58,7 @@ export const mapMutations = normalizeNamespace((namespace, mutations) => {
         commit = module.context.commit // ! 模块的 commit
       }
       return typeof val === 'function'
-        ? // ! 调用这个函数 val(commit, args)，函数传入 commit，在函数体中使用 commit 来提交 mutation
+        ? // ! 调用这个函数 val(commit, args)，函数传入 commit，在函数体中可以使用 commit 来提交 mutation
           val.apply(this, [commit].concat(args))
         : commit.apply(this.$store, [val].concat(args)) // ! string 形式 --> this.$store.commit(val, args)
     }
@@ -170,7 +170,7 @@ function normalizeNamespace(fn) {
       map = namespace // ! 把命名空间设置为 map
       namespace = '' // ! 命名空间为空
       // ! 命名空间没有以 / 结尾时，拼接 / => moduleName = moduleName/
-      // ! 模块名和函数名之间需要使用 / 隔开
+      // ! 模块名和 type 之间需要使用 / 隔开
     } else if (namespace.charAt(namespace.length - 1) !== '/') {
       namespace += '/'
     }
