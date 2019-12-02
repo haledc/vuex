@@ -1,3 +1,5 @@
+import { isObject } from './util'
+
 /**
  * Reduce the code which written in Vue.js for getting the state.
  * @param {String} [namespace] - Module's namespace
@@ -6,6 +8,11 @@
  */
 export const mapState = normalizeNamespace((namespace, states) => {
   const res = {}
+  if (process.env.NODE_ENV !== 'production' && !isValidMap(states)) {
+    console.error(
+      '[vuex] mapState: mapper parameter must be either an Array or an Object'
+    )
+  }
   // ! states： [1, 2, 3] => [{ key: 1, val: 1 }, { key: 2, val: 2 }, { key: 3, val: 3 }]
   // ! states： {a:1, b:2, c:3} => [{ key: a, val: 1 }, { key: b, val: 2 }, { key: c, val: 3 }]
   normalizeMap(states).forEach(({ key, val }) => {
@@ -41,6 +48,11 @@ export const mapState = normalizeNamespace((namespace, states) => {
  */
 export const mapMutations = normalizeNamespace((namespace, mutations) => {
   const res = {}
+  if (process.env.NODE_ENV !== 'production' && !isValidMap(mutations)) {
+    console.error(
+      '[vuex] mapMutations: mapper parameter must be either an Array or an Object'
+    )
+  }
   normalizeMap(mutations).forEach(({ key, val }) => {
     res[key] = function mappedMutation(...args) {
       // Get the commit method from store
@@ -74,6 +86,11 @@ export const mapMutations = normalizeNamespace((namespace, mutations) => {
  */
 export const mapGetters = normalizeNamespace((namespace, getters) => {
   const res = {}
+  if (process.env.NODE_ENV !== 'production' && !isValidMap(getters)) {
+    console.error(
+      '[vuex] mapGetters: mapper parameter must be either an Array or an Object'
+    )
+  }
   normalizeMap(getters).forEach(({ key, val }) => {
     // The namespace has been mutated by normalizeNamespace
     val = namespace + val // ! moduleName/getterName
@@ -107,6 +124,11 @@ export const mapGetters = normalizeNamespace((namespace, getters) => {
  */
 export const mapActions = normalizeNamespace((namespace, actions) => {
   const res = {}
+  if (process.env.NODE_ENV !== 'production' && !isValidMap(actions)) {
+    console.error(
+      '[vuex] mapActions: mapper parameter must be either an Array or an Object'
+    )
+  }
   normalizeMap(actions).forEach(({ key, val }) => {
     res[key] = function mappedAction(...args) {
       // get dispatch function from store
@@ -151,9 +173,21 @@ export const createNamespacedHelpers = namespace => ({
  * ! 规范化 Map 👆
  */
 function normalizeMap(map) {
+  if (!isValidMap(map)) {
+    return []
+  }
   return Array.isArray(map)
     ? map.map(key => ({ key, val: key })) // ! 不修改 key 的名字
     : Object.keys(map).map(key => ({ key, val: map[key] })) // ! 映射，修改 key的名字
+}
+
+/**
+ * Validate whether given map is valid or not
+ * @param {*} map
+ * @return {Boolean}
+ */
+function isValidMap(map) {
+  return Array.isArray(map) || isObject(map)
 }
 
 /**

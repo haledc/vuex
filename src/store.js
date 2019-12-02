@@ -41,6 +41,7 @@ export class Store {
     this._modulesNamespaceMap = Object.create(null) // ! 模块命名映射表 { 'moduleName/': module}
     this._subscribers = [] // ! 存储 mutation 的所有订阅函数
     this._watcherVM = new Vue() // ! 创建一个 Vue 实例，用来使用实例属性 $watch 实现 watch API
+    this._makeLocalGettersCache = Object.create(null)
 
     // bind commit and dispatch to self
     const store = this
@@ -201,7 +202,7 @@ export class Store {
     )
   }
 
-  // ! 替换 state 的根状态，这里也是提交 commit 进行数据修改 
+  // ! 替换 state 的根状态，这里也是提交 commit 进行数据修改
   replaceState(state) {
     this._withCommit(() => {
       this._vm._data.$$state = state
@@ -301,14 +302,15 @@ function resetStoreVM(store, state, hot) {
 
   // bind store public getters
   store.getters = {} // ! 创建 getters 属性
+  // reset local getters cache
+  store._makeLocalGettersCache = Object.create(null)
   const wrappedGetters = store._wrappedGetters // ! 获取 wrappedGetters 对象
   const computed = {} // ! 设置计算属性对象
   // ! 遍历 wrappedGetters
   forEachValue(wrappedGetters, (fn, key) => {
     // use computed to leverage its lazy-caching mechanism
     // direct inline function use will lead to closure preserving oldVm.
-    // using partial to return function with only arguments preserved in closure enviroment
-    // ! 把 wrappedGetter 函数的返回值赋值到 VM 的 computed 中
+    // using partial to return function with only arguments preserved in closure environment.
     computed[key] = partial(fn, store) // ! fn(store) -> wrappedGetter(store)
     // ! 定义 store.getters 的属性
     // ! store.getters.xxx -> store._vm[xxx] -> store._vm.computed[xxx]
@@ -379,6 +381,15 @@ function installModule(store, rootState, path, module, hot) {
     const parentState = getNestedState(rootState, path.slice(0, -1)) // ! 获取父级的 state
     const moduleName = path[path.length - 1] // ! 获取模块名
     store._withCommit(() => {
+      if (process.env.NODE_ENV !== 'production') {
+        if (moduleName in parentState) {
+          console.warn(
+            `[vuex] state field "${moduleName}" was overridden by a module with the same name at "${path.join(
+              '.'
+            )}"`
+          )
+        }
+      }
       Vue.set(parentState, moduleName, module.state) // ! 设置子模块，建立父子关系，并且为响应性数据
     })
   }
@@ -489,27 +500,29 @@ function makeLocalContext(store, namespace, path) {
 
 // ! 创建本地 getters 的方法，返回代理对象
 function makeLocalGetters(store, namespace) {
-  const gettersProxy = {}
+  if (!store._makeLocalGettersCache[namespace]) {
+    const gettersProxy = {}
+    const splitPos = namespace.length // ! 分割点：namespace 的长度
+    Object.keys(store.getters).forEach(type => {
+      // skip if the target getter is not match this namespace
+      if (type.slice(0, splitPos) !== namespace) return // ! 命名空间和 type 的模块名不一致时直接返回，即没有匹配成功
 
-  const splitPos = namespace.length // ! 分割点：namespace 的长度
-  Object.keys(store.getters).forEach(type => {
-    // skip if the target getter is not match this namespace
-    if (type.slice(0, splitPos) !== namespace) return // ! 命名空间和 type 的模块名不一致时直接返回，即没有匹配成功
+      // extract local getter type
+      const localType = type.slice(splitPos) // ! 截取 type 名称：moduleName/getterName --> getterName
 
-    // extract local getter type
-    const localType = type.slice(splitPos) // ! 截取 type 名称：moduleName/getterName --> getterName
-
-    // Add a port to the getters proxy.
-    // Define as getter property because
-    // we do not want to evaluate the getters in this time.
-    // ! 代理 gettersProxy，gettersProxy.localType === store.getters[type]
-    Object.defineProperty(gettersProxy, localType, {
-      get: () => store.getters[type], // ! gettersProxy.localType === store.getters[type]
-      enumerable: true
+      // Add a port to the getters proxy.
+      // Define as getter property because
+      // we do not want to evaluate the getters in this time.
+      // ! 代理 gettersProxy，gettersProxy.localType === store.getters[type]
+      Object.defineProperty(gettersProxy, localType, {
+        get: () => store.getters[type], // ! gettersProxy.localType === store.getters[type]
+        enumerable: true
+      })
     })
-  })
+    store._makeLocalGettersCache[namespace] = gettersProxy
+  }
 
-  return gettersProxy
+  return store._makeLocalGettersCache[namespace]
 }
 
 // ! 注册 mutations，把 mutation 放入到 _mutations 中，并重写里面的函数
@@ -526,11 +539,11 @@ function registerMutation(store, type, handler, local) {
 // ! 注册 actions，把 action 放入到 _actions 中，并重写里面的函数
 function registerAction(store, type, handler, local) {
   const entry = store._actions[type] || (store._actions[type] = [])
-  entry.push(function wrappedActionHandler(payload, cb) {
+  entry.push(function wrappedActionHandler(payload) {
     let res = handler.call(
       store,
-      // ! 第一个参数有很多选项，注意区分是模块 local 的属性还是根 store 的属性
       {
+        // ! 第一个参数有很多选项，注意区分是模块 local 的属性还是根 store 的属性
         dispatch: local.dispatch,
         commit: local.commit,
         getters: local.getters,
@@ -538,10 +551,8 @@ function registerAction(store, type, handler, local) {
         rootGetters: store.getters,
         rootState: store.state
       },
-      payload,
-      cb
+      payload
     ) // ! actionFn({ commit... rootState }, payload, cb)
-
     // ! 判断返回值是否是 Promise，不是就调用 Promise.resolve() 转换成 Promise
     if (!isPromise(res)) {
       res = Promise.resolve(res)
@@ -600,7 +611,7 @@ function enableStrictMode(store) {
 
 // ! 获取嵌套的 state 数据
 function getNestedState(state, path) {
-  return path.length ? path.reduce((state, key) => state[key], state) : state
+  return path.reduce((state, key) => state[key], state)
 }
 
 // ! 规范化 commit 和 dispatch 函数的参数
