@@ -70,8 +70,7 @@ export const mapMutations = normalizeNamespace((namespace, mutations) => {
         commit = module.context.commit // ! 模块的 commit
       }
       return typeof val === 'function'
-        ? // ! 调用这个函数 val(commit, args)，函数传入 commit，在函数体中可以使用 commit 来提交 mutation
-          val.apply(this, [commit].concat(args))
+        ? val.apply(this, [commit].concat(args)) // ! 调用这个函数 val(commit, args)，函数传入 commit，在函数体中可以使用 commit 来提交 mutation
         : commit.apply(this.$store, [val].concat(args)) // ! string 形式 --> this.$store.commit(val, args)
     }
   })

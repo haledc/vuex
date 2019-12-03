@@ -435,8 +435,7 @@ function makeLocalContext(store, namespace, path) {
   const local = {
     dispatch: noNamespace
       ? store.dispatch // ! 没有命名空间，直接使用根的 dispatch --> dispatch(actionName, payload)
-      : // ! 有命名空间，提交的类型 type 不一样
-        (_type, _payload, _options) => {
+      : (_type, _payload, _options) => {
           const args = unifyObjectStyle(_type, _payload, _options)
           const { payload, options } = args
           let { type } = args

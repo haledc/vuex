@@ -15,7 +15,7 @@ export default function devtoolPlugin(store) {
 
   // ! 监听 Vuex 的 travel-to-state 事件，获取新值并替换 state
   devtoolHook.on('vuex:travel-to-state', targetState => {
-    store.replaceState(targetState) 
+    store.replaceState(targetState)
   })
 
   // ! 订阅 mutation，派发 Vuex 的 mutation 事件，传入 mutation 和 state
