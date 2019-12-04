@@ -21,13 +21,13 @@ export const mapState = normalizeNamespace((namespace, states) => {
       let state = this.$store.state
       let getters = this.$store.getters
       // ! 如果设置了命名空间，即 mapXXX(namespace, ['name1', 'name2'])
-      // ! 获取命名空间模块的值，即 store.xxx.name1 -> store.xxx[namespace/name1]
+      // ! 获取命名空间模块的值，即 store.state.namespace.name1
       if (namespace) {
         const module = getModuleByNamespace(this.$store, 'mapState', namespace) // ! 通过命名空间获取对应模块
         if (!module) {
           return
         }
-        state = module.context.state // ! 在模块中获取值
+        state = module.context.state // ! 模块中的 state
         getters = module.context.getters
       }
       return typeof val === 'function' // ! 判断是否是函数

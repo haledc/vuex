@@ -36,12 +36,12 @@ export class Store {
     this._actions = Object.create(null) // ! 存储 actions
     this._actionSubscribers = [] // ! 存储 action 的所有订阅函数
     this._mutations = Object.create(null) // ! 存储 mutations
-    this._wrappedGetters = Object.create(null) // ! 存储 getters
+    this._wrappedGetters = Object.create(null) // ! 存储 wrapper getters
     this._modules = new ModuleCollection(options) // ! ① 模块收集 => { root: rootModule }
     this._modulesNamespaceMap = Object.create(null) // ! 模块命名映射表 { 'moduleName/': module}
     this._subscribers = [] // ! 存储 mutation 的所有订阅函数
     this._watcherVM = new Vue() // ! 创建一个 Vue 实例，用来使用实例属性 $watch 实现 watch API
-    this._makeLocalGettersCache = Object.create(null)
+    this._makeLocalGettersCache = Object.create(null) // ! 模块的 getters
 
     // bind commit and dispatch to self
     const store = this
@@ -342,7 +342,7 @@ function resetStoreVM(store, state, hot) {
     enableStrictMode(store)
   }
 
-  // ! 热更新处理
+  // ! 热重载处理
   if (oldVm) {
     if (hot) {
       // dispatch changes in all subscribed watchers
@@ -440,6 +440,7 @@ function makeLocalContext(store, namespace, path) {
           const { payload, options } = args
           let { type } = args
 
+          // ! options: { root: true } -> 也不会拼接命名空间
           if (!options || !options.root) {
             type = namespace + type // ! 拼接 type => 'moduleName/actionName'
             if (
@@ -499,6 +500,7 @@ function makeLocalContext(store, namespace, path) {
 
 // ! 创建本地 getters 的方法，返回代理对象
 function makeLocalGetters(store, namespace) {
+  // ! 添加模块的 getters 到 _makeLocalGettersCache 中
   if (!store._makeLocalGettersCache[namespace]) {
     const gettersProxy = {}
     const splitPos = namespace.length // ! 分割点：namespace 的长度
@@ -514,7 +516,7 @@ function makeLocalGetters(store, namespace) {
       // we do not want to evaluate the getters in this time.
       // ! 代理 gettersProxy，gettersProxy.localType === store.getters[type]
       Object.defineProperty(gettersProxy, localType, {
-        get: () => store.getters[type], // ! gettersProxy.localType === store.getters[type]
+        get: () => store.getters[type],
         enumerable: true
       })
     })
