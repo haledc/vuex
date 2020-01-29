@@ -118,6 +118,10 @@ export class Store {
       })
     })
 
+    this._subscribers
+      .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
+      .forEach(sub => sub(mutation, this.state))
+
     this._subscribers.forEach(sub => sub(mutation, this.state)) // ! 执行 mutation 后，执行所有订阅函数
 
     if (process.env.NODE_ENV !== 'production' && options && options.silent) {
@@ -145,6 +149,7 @@ export class Store {
     // ! action 执行前，先执行 action 的所有订阅器的 before 函数
     try {
       this._actionSubscribers
+        .slice() // shallow copy to prevent iterator invalidation if subscriber synchronously calls unsubscribe
         .filter(sub => sub.before)
         .forEach(sub => sub.before(action, this.state))
     } catch (e) {
