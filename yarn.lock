@@ -962,10 +962,10 @@
     "@vue/compiler-core" "3.0.0-alpha.13"
     "@vue/shared" "3.0.0-alpha.13"
 
-"@vue/compiler-sfc@^3.0.0-alpha.13":
+"@vue/compiler-sfc@3.0.0-alpha.13":
   version "3.0.0-alpha.13"
-  resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.0.0-alpha.13.tgz#075921331a01ab483e71e3b33bf4238c0c35a449"
-  integrity sha512-koU+iNgyleTBRphI/XZ4V1UxveQC4ILniOXFVRNTHBCzSzfFI+Dd5lHMr3BDOABnb1EuUZeC/hAz6tc4U0qzEw==
+  resolved "https://registry.npm.taobao.org/@vue/compiler-sfc/download/@vue/compiler-sfc-3.0.0-alpha.13.tgz#075921331a01ab483e71e3b33bf4238c0c35a449"
+  integrity sha1-B1khMxoBq0g+ceOzO/QjjAw1pEk=
   dependencies:
     "@vue/compiler-core" "3.0.0-alpha.13"
     "@vue/compiler-dom" "3.0.0-alpha.13"
