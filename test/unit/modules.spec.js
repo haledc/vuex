@@ -1,5 +1,5 @@
 import { nextTick } from 'vue'
-import Vuex from '../../dist/vuex.common.js'
+import Vuex from '../../src/index'
 
 const TEST = 'TEST'
 
@@ -79,6 +79,16 @@ describe('Modules', () => {
 
       store.commit('a/foo')
       expect(mutationSpy).toHaveBeenCalled()
+    })
+
+    it('dynamic module existance test', () => {
+      const store = new Vuex.Store({})
+
+      store.registerModule('bonjour', {})
+
+      expect(store.hasModule('bonjour')).toBe(true)
+      store.unregisterModule('bonjour')
+      expect(store.hasModule('bonjour')).toBe(false)
     })
 
     it('dynamic module registration preserving hydration', () => {
