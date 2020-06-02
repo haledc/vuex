@@ -66,6 +66,41 @@ namespace StoreInstance {
   });
 
   store.subscribeAction({
+    before(action, state) {
+      action.type;
+      action.payload;
+      state.value;
+    },
+    error(action, state, error) {
+      action.type;
+      action.payload;
+      state.value;
+      error;
+    }
+  });
+
+  store.subscribeAction({
+    before(action, state) {
+      action.type;
+      action.payload;
+      state.value;
+    },
+    after(action, state) {
+      action.type;
+      action.payload;
+      state.value;
+    },
+    error(action, state, error) {
+      action.type;
+      action.payload;
+      state.value;
+      error;
+    }
+  });
+
+<<<<<<< HEAD
+=======
+  store.subscribeAction({
     after(action, state) {
       action.type;
       action.payload;
@@ -73,9 +108,45 @@ namespace StoreInstance {
     }
   });
 
+  store.subscribeAction({
+    after(action, state) {
+      action.type;
+      action.payload;
+      state.value;
+    },
+    error(action, state, error) {
+      action.type;
+      action.payload;
+      state.value;
+      error;
+    }
+  });
+
+  store.subscribeAction({
+    error(action, state, error) {
+      action.type;
+      action.payload;
+      state.value;
+      error;
+    }
+  });
+
+>>>>>>> upstream/4.0
   store.subscribeAction({}, { prepend: true });
 
   store.replaceState({ value: 10 });
+}
+
+namespace UseStoreFunction {
+  interface State {
+    a: string
+  }
+
+  const storeWithState = Vuex.useStore<State>()
+  storeWithState.state.a
+
+  const storeAsAny = Vuex.useStore()
+  storeAsAny.state.a
 }
 
 namespace RootModule {

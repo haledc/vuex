@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { mount } from './support/helpers'
 import Vuex, { mapState, mapMutations, mapGetters, mapActions, createNamespacedHelpers } from '../../src/index'
+=======
+import { mount } from 'test/helpers'
+import Vuex, { mapState, mapMutations, mapGetters, mapActions, createNamespacedHelpers } from '@/index'
+>>>>>>> upstream/4.0
 
 describe('Helpers', () => {
   it('mapState (array)', () => {
@@ -91,7 +96,7 @@ describe('Helpers', () => {
   })
 
   it('mapState (with undefined states)', () => {
-    spyOn(console, 'error')
+    jest.spyOn(console, 'error').mockImplementation()
     const store = new Vuex.Store({
       modules: {
         foo: {
@@ -215,7 +220,7 @@ describe('Helpers', () => {
   })
 
   it('mapMutations (with undefined mutations)', () => {
-    spyOn(console, 'error')
+    jest.spyOn(console, 'error').mockImplementation()
     const store = new Vuex.Store({
       modules: {
         foo: {
@@ -378,7 +383,7 @@ describe('Helpers', () => {
   })
 
   it('mapGetters (with undefined getters)', () => {
-    spyOn(console, 'error')
+    jest.spyOn(console, 'error').mockImplementation()
     const store = new Vuex.Store({
       modules: {
         foo: {
@@ -404,8 +409,8 @@ describe('Helpers', () => {
   })
 
   it('mapActions (array)', () => {
-    const a = jasmine.createSpy()
-    const b = jasmine.createSpy()
+    const a = jest.fn()
+    const b = jest.fn()
     const store = new Vuex.Store({
       actions: {
         a,
@@ -423,8 +428,8 @@ describe('Helpers', () => {
   })
 
   it('mapActions (object)', () => {
-    const a = jasmine.createSpy()
-    const b = jasmine.createSpy()
+    const a = jest.fn()
+    const b = jest.fn()
     const store = new Vuex.Store({
       actions: {
         a,
@@ -445,7 +450,7 @@ describe('Helpers', () => {
   })
 
   it('mapActions (function)', () => {
-    const a = jasmine.createSpy()
+    const a = jest.fn()
     const store = new Vuex.Store({
       actions: { a }
     })
@@ -457,12 +462,12 @@ describe('Helpers', () => {
       })
     })
     vm.foo('foo')
-    expect(a.calls.argsFor(0)[1]).toBe('foobar')
+    expect(a.mock.calls[0][1]).toBe('foobar')
   })
 
   it('mapActions (with namespace)', () => {
-    const a = jasmine.createSpy()
-    const b = jasmine.createSpy()
+    const a = jest.fn()
+    const b = jest.fn()
     const store = new Vuex.Store({
       modules: {
         foo: {
@@ -488,7 +493,7 @@ describe('Helpers', () => {
   })
 
   it('mapActions (function with namespace)', () => {
-    const a = jasmine.createSpy()
+    const a = jest.fn()
     const store = new Vuex.Store({
       modules: {
         foo: {
@@ -505,12 +510,12 @@ describe('Helpers', () => {
       })
     })
     vm.foo('foo')
-    expect(a.calls.argsFor(0)[1]).toBe('foobar')
+    expect(a.mock.calls[0][1]).toBe('foobar')
   })
 
   it('mapActions (with undefined actions)', () => {
-    spyOn(console, 'error')
-    const a = jasmine.createSpy()
+    jest.spyOn(console, 'error').mockImplementation()
+    const a = jest.fn()
     const store = new Vuex.Store({
       modules: {
         foo: {
@@ -530,8 +535,8 @@ describe('Helpers', () => {
   })
 
   it('createNamespacedHelpers', () => {
-    const actionA = jasmine.createSpy()
-    const actionB = jasmine.createSpy()
+    const actionA = jest.fn()
+    const actionB = jest.fn()
     const store = new Vuex.Store({
       modules: {
         foo: {

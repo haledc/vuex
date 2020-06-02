@@ -1,3 +1,14 @@
+<<<<<<< HEAD
+=======
+# [4.0.0-beta.2](https://github.com/vuejs/vuex/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-11)
+
+
+### Bug Fixes
+
+- types: add `useStore` function ([#1736](https://github.com/vuejs/vuex/issues/1736)) [#1739](https://github.com/vuejs/vuex/issues/1736)
+- build: fix `iife` build containing `process.env`.
+
+>>>>>>> upstream/4.0
 # [4.0.0-beta.1](https://github.com/vuejs/vuex/compare/v3.3.0...v4.0.0-beta.1) (2020-04-25)
 
 ### Features
@@ -97,6 +108,17 @@ app.mount('#app')
 - TypeScript support is not ready yet. Please use JS environment to test this for now.
 
 
+<<<<<<< HEAD
+=======
+# [3.4.0](https://github.com/vuejs/vuex/compare/v3.3.0...v3.4.0) (2020-05-11)
+
+
+### Features
+
+* Allow action subscribers to catch rejections. ([#1740](https://github.com/vuejs/vuex/issues/1740)) ([6ebbe64](https://github.com/vuejs/vuex/commit/6ebbe64c5821d19e55a41dc8b1d81cfce6cbd195)), closes [#1489](https://github.com/vuejs/vuex/issues/1489) [#1558](https://github.com/vuejs/vuex/issues/1558) [#1625](https://github.com/vuejs/vuex/issues/1625)
+
+
+>>>>>>> upstream/4.0
 # [3.3.0](https://github.com/vuejs/vuex/compare/v3.2.0...v3.3.0) (2020-04-25)
 
 
