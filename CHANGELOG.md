@@ -1,5 +1,37 @@
-<<<<<<< HEAD
-=======
+# [4.0.0-beta.4](https://github.com/vuejs/vuex/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-06-29)
+
+
+### Bug Fixes
+
+* **types:** add missing `logger.d.ts` file to the package ([#1789](https://github.com/vuejs/vuex/issues/1789)) ([a477334](https://github.com/vuejs/vuex/commit/a477334b909913f6a92bdbedcf4a3016a62eab7a))
+* warn when unregistering non existing module ([#1786](https://github.com/vuejs/vuex/issues/1786)) ([7cec79d](https://github.com/vuejs/vuex/commit/7cec79d339b874ec41f35891c891dfd27460c1d3))
+
+
+
+# [3.5.0](https://github.com/vuejs/vuex/compare/v4.0.0-beta.2...v3.5.0) (2020-06-29)
+
+
+
+# [4.0.0-beta.3](https://github.com/vuejs/vuex/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2020-06-29)
+
+
+### Bug Fixes
+
+* UMD bundle containing `process.env` flag ([#1749](https://github.com/vuejs/vuex/issues/1749)) ([0fea8c4](https://github.com/vuejs/vuex/commit/0fea8c44060d08b3b421f1ddaa809fdffbc89b00))
+
+
+### Features
+
+* include `createLogger` function in core export ([afa566d](https://github.com/vuejs/vuex/commit/afa566d7f7b8e516389463b437fbfcb9eafdbd1b))
+* include logger plugin to the core export ([#1783](https://github.com/vuejs/vuex/issues/1783)) ([04e2bd8](https://github.com/vuejs/vuex/commit/04e2bd8b3509c67398a6fe73a3d53660069feca8))
+
+
+
+# [3.4.0](https://github.com/vuejs/vuex/compare/4.0.0-beta.2...v3.4.0) (2020-05-11)
+
+
+
+>>>>>>> upstream/4.0
 # [4.0.0-beta.2](https://github.com/vuejs/vuex/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2020-05-11)
 
 
@@ -108,8 +140,6 @@ app.mount('#app')
 - TypeScript support is not ready yet. Please use JS environment to test this for now.
 
 
-<<<<<<< HEAD
-=======
 # [3.4.0](https://github.com/vuejs/vuex/compare/v3.3.0...v3.4.0) (2020-05-11)
 
 
@@ -118,7 +148,6 @@ app.mount('#app')
 * Allow action subscribers to catch rejections. ([#1740](https://github.com/vuejs/vuex/issues/1740)) ([6ebbe64](https://github.com/vuejs/vuex/commit/6ebbe64c5821d19e55a41dc8b1d81cfce6cbd195)), closes [#1489](https://github.com/vuejs/vuex/issues/1489) [#1558](https://github.com/vuejs/vuex/issues/1558) [#1625](https://github.com/vuejs/vuex/issues/1625)
 
 
->>>>>>> upstream/4.0
 # [3.3.0](https://github.com/vuejs/vuex/compare/v3.2.0...v3.3.0) (2020-04-25)
 
 

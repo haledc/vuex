@@ -1,7 +1,4 @@
-// Types for the logger plugin. This file must be put alongside the bundled
-// JavaScript file of the logger.
-
-import { Payload, Plugin } from "../types/index";
+import { Payload, Plugin } from "./index";
 
 export interface LoggerOption<S> {
   collapsed?: boolean;
@@ -14,4 +11,4 @@ export interface LoggerOption<S> {
   logActions?: boolean;
 }
 
-export default function createLogger<S>(option?: LoggerOption<S>): Plugin<S>;
+export function createLogger<S>(option?: LoggerOption<S>): Plugin<S>;
