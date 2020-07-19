@@ -1,10 +1,10 @@
 import { storeKey } from './injectKey'
 
-export default function(app, store, injectKey) {
+export default function (app, store, injectKey) {
   app.provide(injectKey || storeKey, store) // ! provide store
 
   app.mixin({
-    beforeCreate() {
+    beforeCreate () {
       if (!this.parent) {
         this.$store = typeof store === 'function' ? store() : store
       } else {

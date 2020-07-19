@@ -97,8 +97,6 @@ namespace StoreInstance {
     }
   });
 
-<<<<<<< HEAD
-=======
   store.subscribeAction({
     after(action, state) {
       action.type;
@@ -130,7 +128,6 @@ namespace StoreInstance {
     }
   });
 
->>>>>>> upstream/4.0
   store.subscribeAction({}, { prepend: true });
 
   store.replaceState({ value: 10 });

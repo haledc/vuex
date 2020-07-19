@@ -1,11 +1,6 @@
 import { nextTick } from 'vue'
-<<<<<<< HEAD
-import { mount } from './support/helpers'
-import Vuex from '../../src/index'
-=======
 import { mount } from 'test/helpers'
 import Vuex from '@/index'
->>>>>>> upstream/4.0
 
 const TEST = 'TEST'
 const isSSR = process.env.VUE_ENV === 'server'

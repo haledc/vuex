@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import { mount } from './support/helpers'
-import Vuex, { mapState, mapMutations, mapGetters, mapActions, createNamespacedHelpers } from '../../src/index'
-=======
 import { mount } from 'test/helpers'
 import Vuex, { mapState, mapMutations, mapGetters, mapActions, createNamespacedHelpers } from '@/index'
->>>>>>> upstream/4.0
 
 describe('Helpers', () => {
   it('mapState (array)', () => {

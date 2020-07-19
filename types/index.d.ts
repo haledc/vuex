@@ -44,11 +44,8 @@ export declare class Store<S> {
 }
 
 export function createStore<S>(options: StoreOptions<S>): Store<S>;
-<<<<<<< HEAD
-=======
 
 export function useStore<S = any>(): Store<S>;
->>>>>>> upstream/4.0
 
 export interface Dispatch {
   (type: string, payload?: any, options?: DispatchOptions): Promise<any>;

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import buble from '@rollup/plugin-buble'
->>>>>>> upstream/4.0
 import replace from '@rollup/plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
@@ -9,18 +6,10 @@ import { terser } from 'rollup-plugin-terser'
 import pkg from './package.json'
 
 const banner = `/*!
-<<<<<<< HEAD
- /**
-  * vuex v${pkg.version}
-  * (c) ${new Date().getFullYear()} Evan You
-  * @license MIT
-  */`
-=======
  * vuex v${pkg.version}
  * (c) ${new Date().getFullYear()} Evan You
  * @license MIT
  */`
->>>>>>> upstream/4.0
 
 const configs = [
   { input: 'src/index.js', file: 'dist/vuex.esm-browser.js', format: 'es', browser: true, env: 'development' },
@@ -31,11 +20,11 @@ const configs = [
   { input: 'src/index.cjs.js', file: 'dist/vuex.cjs.js', format: 'cjs', env: 'development' }
 ]
 
-function createEntries() {
+function createEntries () {
   return configs.map((c) => createEntry(c))
 }
 
-function createEntry(config) {
+function createEntry (config) {
   const c = {
     external: ['vue'],
     input: config.input,
@@ -60,23 +49,16 @@ function createEntry(config) {
   }
 
   c.plugins.push(replace({
-<<<<<<< HEAD
-    __DEV__: config.format === 'es' && !config.browser
-=======
     __VERSION__: pkg.version,
     __DEV__: config.format !== 'iife' && !config.browser
->>>>>>> upstream/4.0
       ? `(process.env.NODE_ENV !== 'production')`
       : config.env !== 'production'
   }))
 
-<<<<<<< HEAD
-=======
   if (config.transpile !== false) {
     c.plugins.push(buble())
   }
 
->>>>>>> upstream/4.0
   c.plugins.push(resolve())
   c.plugins.push(commonjs())
 

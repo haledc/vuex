@@ -1,9 +1,5 @@
 import { nextTick } from 'vue'
-<<<<<<< HEAD
-import Vuex from '../../src/index'
-=======
 import Vuex from '@/index'
->>>>>>> upstream/4.0
 
 const TEST = 'TEST'
 
