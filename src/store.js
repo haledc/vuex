@@ -65,8 +65,8 @@ export class Store {
   }
 
   install (app, injectKey) {
-    app.provide(injectKey || storeKey, this)
-    app.config.globalProperties.$store = this
+    app.provide(injectKey || storeKey, this) // ! provide store
+    app.config.globalProperties.$store = this // ! global property
   }
 
   get state () {
@@ -190,7 +190,7 @@ export class Store {
     if (__DEV__) {
       assert(typeof getter === 'function', `store.watch only accepts a function.`)
     }
-    return watch(() => getter(this.state, this.getters), cb, Object.assign({}, options))
+    return watch(() => getter(this.state, this.getters), cb, Object.assign({}, options)) // ! watch
   }
 
   replaceState (state) {
@@ -292,11 +292,12 @@ function resetStoreState (store, state, hot) {
     // using partial to return function with only arguments preserved in closure environment.
     computedObj[key] = partial(fn, store)
     Object.defineProperty(store.getters, key, {
-      get: () => computed(() => computedObj[key]()).value,
+      get: () => computed(() => computedObj[key]()).value, // ! computed
       enumerable: true // for local getters
     })
   })
 
+  // ! reactive
   store._state = reactive({
     data: state
   })
