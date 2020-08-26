@@ -6,6 +6,7 @@
  * @param {Function} f
  * @return {*}
  */
+// ! 查找数组中符合条件的第一个值
 export function find (list, f) {
   return list.filter(f)[0]
 }
@@ -19,6 +20,7 @@ export function find (list, f) {
  * @param {Array<Object>} cache
  * @return {*}
  */
+// ! 深度拷贝
 export function deepCopy (obj, cache = []) {
   // just return if obj is immutable value
   if (obj === null || typeof obj !== 'object') {
@@ -49,22 +51,27 @@ export function deepCopy (obj, cache = []) {
 /**
  * forEach for object
  */
+// ! 使用函数处理对象的所有 value 和 key
 export function forEachValue (obj, fn) {
   Object.keys(obj).forEach(key => fn(obj[key], key))
 }
 
+// ! 判断是否是一个对象类型（非 null）
 export function isObject (obj) {
   return obj !== null && typeof obj === 'object'
 }
 
+// ! 判断是否是 Promise 对象
 export function isPromise (val) {
   return val && typeof val.then === 'function'
 }
 
+// ! 断言：当条件没达成的时候，抛出错误
 export function assert (condition, msg) {
   if (!condition) throw new Error(`[vuex] ${msg}`)
 }
 
+// ! 创建部分应用函数
 export function partial (fn, arg) {
   return function () {
     return fn(arg)

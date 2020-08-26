@@ -3,30 +3,31 @@
 import { deepCopy } from '../util'
 
 export function createLogger ({
-  collapsed = true,
-  filter = (mutation, stateBefore, stateAfter) => true,
-  transformer = state => state,
-  mutationTransformer = mut => mut,
-  actionFilter = (action, state) => true,
-  actionTransformer = act => act,
-  logMutations = true,
-  logActions = true,
+  collapsed = true, // ! 默认折叠
+  filter = (mutation, stateBefore, stateAfter) => true, // ! 筛选 mutation 和 state 函数
+  transformer = state => state, // ! 处理数据的函数
+  mutationTransformer = mut => mut, // ! 处理 mutation 的函数
+  actionFilter = (action, state) => true, // ! action 筛选函数
+  actionTransformer = act => act, // ! 处理 action 的函数
+  logMutations = true, // ! 是否打印 mutation 信息
+  logActions = true, // ! 是否打印 action 信息
   logger = console
 } = {}) {
   return store => {
-    let prevState = deepCopy(store.state)
+    let prevState = deepCopy(store.state) // ! 深拷贝旧的数据
 
     if (typeof logger === 'undefined') {
       return
     }
 
     if (logMutations) {
+      // ! 订阅 mutation
       store.subscribe((mutation, state) => {
-        const nextState = deepCopy(state)
+        const nextState = deepCopy(state) // ! 深拷贝新的数据（mutation 后的数据）
 
         if (filter(mutation, prevState, nextState)) {
-          const formattedTime = getFormattedTime()
-          const formattedMutation = mutationTransformer(mutation)
+          const formattedTime = getFormattedTime() // ! 格式化后的当前时间
+          const formattedMutation = mutationTransformer(mutation) // ! 处理后的 mutation 数据
           const message = `mutation ${mutation.type}${formattedTime}`
 
           startMessage(logger, message, collapsed)
@@ -36,15 +37,15 @@ export function createLogger ({
           endMessage(logger)
         }
 
-        prevState = nextState
+        prevState = nextState // ! 每次都更新数据（新数据变旧数据）
       })
     }
 
     if (logActions) {
       store.subscribeAction((action, state) => {
         if (actionFilter(action, state)) {
-          const formattedTime = getFormattedTime()
-          const formattedAction = actionTransformer(action)
+          const formattedTime = getFormattedTime() // ! 格式化后的当前时间
+          const formattedAction = actionTransformer(action) // ! 处理后的 action 数据
           const message = `action ${action.type}${formattedTime}`
 
           startMessage(logger, message, collapsed)
